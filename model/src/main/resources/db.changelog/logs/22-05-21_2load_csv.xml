@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="1653251829756-1" author="Karpov">
+        <loadData tableName="tag" file="db.changelog/data/init_tags.csv"/>
+    </changeSet>
+
+    <changeSet id="1653249761460-1" author="Karpov">
+        <loadData tableName="user" file="db.changelog/data/init_users.csv"/>
+    </changeSet>
+
+    <changeSet id="1653250423910-1" author="Karpov">
+        <loadData tableName="gift_certificate" file="db.changelog/data/init_certificate.csv"/>
+   </changeSet>
+
+    <changeSet id="1653250423111-1" author="Karpov">
+        <loadData tableName="orders" file="db.changelog/data/init_orders.csv"/>
+    </changeSet>
+
+    <changeSet id="1653250423121-1" author="Karpov">
+        <loadData tableName="gift_certificate_tag" file="db.changelog/data/init_gift_certificate_tag.csv"/>
+    </changeSet>
+
+</databaseChangeLog>
