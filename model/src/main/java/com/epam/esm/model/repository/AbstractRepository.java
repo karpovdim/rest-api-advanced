@@ -24,7 +24,6 @@ public abstract class AbstractRepository<T extends ApplicationBaseEntity> implem
 
     @PersistenceContext
     protected final EntityManager entityManager;
-
     protected final CriteriaBuilder criteriaBuilder;
     protected final Class<T> entityType;
     protected final QueryBuildHelper criteriaBuilderHelper;
@@ -68,10 +67,8 @@ public abstract class AbstractRepository<T extends ApplicationBaseEntity> implem
         CriteriaQuery<T> query = criteriaBuilder.createQuery(entityType);
         Root<T> root = query.from(entityType);
         query.select(root);
-
         Predicate fieldPredicate = criteriaBuilder.equal(root.get(fieldName), value);
         query.where(fieldPredicate);
-
         TypedQuery<T> typedQuery = entityManager.createQuery(query);
         return criteriaBuilderHelper.getOptionalQueryResult(typedQuery);
     }

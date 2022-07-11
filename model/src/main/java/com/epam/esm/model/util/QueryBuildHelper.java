@@ -4,20 +4,17 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.epam.esm.model.repository.RepositoryConstant.*;
+
 @NoArgsConstructor
 public class QueryBuildHelper {
 
-    private static final String NAME = "name";
-    private static final String DESCRIPTION = "description";
+
 
     private CriteriaBuilder criteriaBuilder;
 
@@ -42,10 +39,10 @@ public class QueryBuildHelper {
             if (orderTypes.size() > i) {
                 orderType = orderTypes.get(i);
             } else {
-                orderType = "ASC";
+                orderType = ASC;
             }
             Order order;
-            if (orderType.equalsIgnoreCase("ASC")) {
+            if (orderType.equalsIgnoreCase(ASC)) {
                 order = criteriaBuilder.asc(root.get(column));
             } else {
                 order = criteriaBuilder.desc(root.get(column));

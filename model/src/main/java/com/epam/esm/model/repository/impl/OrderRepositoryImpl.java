@@ -15,6 +15,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import static com.epam.esm.model.repository.RepositoryConstant.*;
+
 @Repository
 @Transactional
 public class OrderRepositoryImpl extends AbstractRepository<Order> implements OrderRepository {
@@ -29,8 +31,8 @@ public class OrderRepositoryImpl extends AbstractRepository<Order> implements Or
         Root<Order> root = query.from(Order.class);
         query.select(root);
 
-        Join<User, Order> userOrderJoin = root.join("user");
-        Predicate joinIdPredicate = criteriaBuilder.equal(userOrderJoin.get("id"), userId);
+        Join<User, Order> userOrderJoin = root.join(USER);
+        Predicate joinIdPredicate = criteriaBuilder.equal(userOrderJoin.get(ID), userId);
         query.where(joinIdPredicate);
 
         int totalAmount = getTotalAmount(root, joinIdPredicate);
