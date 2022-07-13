@@ -15,7 +15,6 @@ import static com.epam.esm.model.repository.RepositoryConstant.*;
 public class QueryBuildHelper {
 
 
-
     private CriteriaBuilder criteriaBuilder;
 
     public QueryBuildHelper(CriteriaBuilder criteriaBuilder) {
@@ -35,18 +34,8 @@ public class QueryBuildHelper {
         List<Order> orderList = new ArrayList<>();
         for (int i = 0; i < sortColumns.size(); i++) {
             String column = sortColumns.get(i);
-            String orderType;
-            if (orderTypes.size() > i) {
-                orderType = orderTypes.get(i);
-            } else {
-                orderType = ASC;
-            }
-            Order order;
-            if (orderType.equalsIgnoreCase(ASC)) {
-                order = criteriaBuilder.asc(root.get(column));
-            } else {
-                order = criteriaBuilder.desc(root.get(column));
-            }
+            String orderType = orderTypes.size() > i ? orderTypes.get(i) : ASC;
+            Order order = orderType.equalsIgnoreCase(ASC) ? criteriaBuilder.asc(root.get(column)) : criteriaBuilder.desc(root.get(column));
             orderList.add(order);
         }
         return orderList;
@@ -56,27 +45,24 @@ public class QueryBuildHelper {
         List<Predicate> predicateList = new ArrayList<>(filterBy.size());
         for (int i = 0; i < filterBy.size(); i++) {
             if (i == 0) {
-                Predicate predicateName = criteriaBuilder.like(root.get(NAME), filterBy.get(i).concat("%"));
-                predicateList.add(predicateName);
+                predicateList.add(getPredicate(root, filterBy.get(i), NAME));
             } else if (i == 1) {
-                Predicate predicateDescription = criteriaBuilder.like(root.get(DESCRIPTION), filterBy.get(i).concat("%"));
-                predicateList.add(predicateDescription);
+                predicateList.add(getPredicate(root, filterBy.get(i), DESCRIPTION));
             }
         }
         return predicateList;
     }
 
     public <T> Predicate buildOrEqualPredicates(Path<T> root, String columnName, List<?> values) {
-        int counter = 0;
         Predicate predicate = null;
-        for (Object value : values) {
-            Predicate currentPredicate = criteriaBuilder.equal(root.get(columnName), value);
-            if (counter++ == 0) {
-                predicate = currentPredicate;
-            } else {
-                predicate = criteriaBuilder.or(predicate, currentPredicate);
-            }
+        for (int i = 0; i < values.size(); i++) {
+            Predicate currentPredicate = criteriaBuilder.equal(root.get(columnName), values.get(i));
+            predicate = i == 0 ? currentPredicate : criteriaBuilder.or(predicate, currentPredicate);
         }
         return predicate;
+    }
+
+    private <T> Predicate getPredicate(Root<T> root, String filterBy, String predicateName) {
+        return criteriaBuilder.like(root.get(predicateName), filterBy.concat("%"));
     }
 }
