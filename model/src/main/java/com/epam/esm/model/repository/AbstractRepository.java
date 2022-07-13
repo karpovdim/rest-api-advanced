@@ -2,10 +2,6 @@ package com.epam.esm.model.repository;
 
 import com.epam.esm.model.entity.ApplicationBaseEntity;
 import com.epam.esm.model.entity.CustomPage;
-import com.epam.esm.model.entity.GiftCertificate;
-import com.epam.esm.model.entity.Order;
-import com.epam.esm.model.entity.Tag;
-import com.epam.esm.model.entity.User;
 import com.epam.esm.model.util.QueryBuildHelper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +16,14 @@ import javax.persistence.criteria.Root;
 import java.math.BigInteger;
 import java.util.Optional;
 
+import static com.epam.esm.model.repository.RepositoryConstant.*;
+
 @Transactional
 public abstract class AbstractRepository<T extends ApplicationBaseEntity> implements EntityRepository<T> {
 
+
     @PersistenceContext
     protected final EntityManager entityManager;
-
     protected final CriteriaBuilder criteriaBuilder;
     protected final Class<T> entityType;
     protected final QueryBuildHelper criteriaBuilderHelper;
@@ -69,10 +67,8 @@ public abstract class AbstractRepository<T extends ApplicationBaseEntity> implem
         CriteriaQuery<T> query = criteriaBuilder.createQuery(entityType);
         Root<T> root = query.from(entityType);
         query.select(root);
-
         Predicate fieldPredicate = criteriaBuilder.equal(root.get(fieldName), value);
         query.where(fieldPredicate);
-
         TypedQuery<T> typedQuery = entityManager.createQuery(query);
         return criteriaBuilderHelper.getOptionalQueryResult(typedQuery);
     }
@@ -89,16 +85,12 @@ public abstract class AbstractRepository<T extends ApplicationBaseEntity> implem
     }
 
     private int getTotalAmount() {
-        if (User.class.equals(entityType)) {
-            return ((BigInteger) entityManager.createNativeQuery("SELECT COUNT(*) FROM user").getSingleResult()).intValue();
-        } else if (GiftCertificate.class.equals(entityType)) {
-            return ((BigInteger) entityManager.createNativeQuery("SELECT COUNT(*) FROM gift_certificate").getSingleResult()).intValue();
-        } else if (Tag.class.equals(entityType)) {
-            return ((BigInteger) entityManager.createNativeQuery("SELECT COUNT(*) FROM tag").getSingleResult()).intValue();
-        } else if (Order.class.equals(entityType)) {
-            return ((BigInteger) entityManager.createNativeQuery("SELECT COUNT(*) FROM orders").getSingleResult()).intValue();
-        } else {
-            return 0;
-        }
+        return switch (entityType.getSimpleName()) {
+            case USER_CLASS_SIMPLE_NAME -> ((BigInteger) entityManager.createNativeQuery(SELECT_COUNT_FROM_USER).getSingleResult()).intValue();
+            case GIFTCERTIFICATE_CLASS_SIMPLE_NAME -> ((BigInteger) entityManager.createNativeQuery(SELECT_COUNT_FROM_GIFT_CERTIFICATE).getSingleResult()).intValue();
+            case TAG_CLASS_SIMPLE_NAME -> ((BigInteger) entityManager.createNativeQuery(SELECT_COUNT_FROM_TAG).getSingleResult()).intValue();
+            case ORDER_CLASS_SIMPLE_NAME -> ((BigInteger) entityManager.createNativeQuery(SELECT_COUNT_FROM_ORDERS).getSingleResult()).intValue();
+            default -> 0;
+        };
     }
 }
